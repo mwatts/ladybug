@@ -1,6 +1,4 @@
-#include "storage/in_mem_csv_copier/in_mem_structures_csv_copier.h"
-
-//#include "spdlog/spdlog.h"
+#include "storage/in_mem_csv_copier/in_mem_structures_copier.h"
 
 #include "common/configs.h"
 #include "storage/storage_structure/lists/lists.h"
@@ -8,13 +6,13 @@
 namespace kuzu {
 namespace storage {
 
-InMemStructuresCSVCopier::InMemStructuresCSVCopier(CSVDescription& csvDescription,
-    string outputDirectory, TaskScheduler& taskScheduler, Catalog& catalog)
+InMemStructuresCopier::InMemStructuresCopier(CSVDescription& csvDescription, string outputDirectory,
+    TaskScheduler& taskScheduler, Catalog& catalog)
     : logger{LoggerUtils::getOrCreateLogger("loader")}, csvDescription{csvDescription},
       outputDirectory{move(outputDirectory)}, numBlocks{0},
       taskScheduler{taskScheduler}, catalog{catalog} {}
 
-void InMemStructuresCSVCopier::calculateNumBlocks(const string& filePath, string tableName) {
+void InMemStructuresCopier::calculateNumBlocks(const string& filePath, string tableName) {
     logger->info("Chunking csv into blocks for table {}.", tableName);
     ifstream inf(filePath, ios_base::in);
     if (!inf.is_open()) {
@@ -26,7 +24,7 @@ void InMemStructuresCSVCopier::calculateNumBlocks(const string& filePath, string
     logger->info("Done chunking csv into blocks for table {}.", tableName);
 }
 
-uint64_t InMemStructuresCSVCopier::calculateNumRows(bool hasHeader) {
+uint64_t InMemStructuresCopier::calculateNumRows(bool hasHeader) {
     assert(numLinesPerBlock.size() == numBlocks);
     auto numRows = 0u;
     if (hasHeader) {
@@ -39,8 +37,8 @@ uint64_t InMemStructuresCSVCopier::calculateNumRows(bool hasHeader) {
     return numRows;
 }
 
-void InMemStructuresCSVCopier::countNumLinesPerBlockTask(
-    const string& fName, uint64_t blockId, InMemStructuresCSVCopier* copier) {
+void InMemStructuresCopier::countNumLinesPerBlockTask(
+    const string& fName, uint64_t blockId, InMemStructuresCopier* copier) {
     copier->logger->trace("Start: path=`{0}` blkIdx={1}", fName, blockId);
     CSVReader reader(fName, copier->csvDescription.csvReaderConfig, blockId);
     copier->numLinesPerBlock[blockId] = 0ull;
@@ -51,8 +49,8 @@ void InMemStructuresCSVCopier::countNumLinesPerBlockTask(
 }
 
 // Lists headers are created for only AdjLists, which store data in the page without NULL bits.
-void InMemStructuresCSVCopier::calculateListHeadersTask(node_offset_t numNodes,
-    uint32_t elementSize, atomic_uint64_vec_t* listSizes, ListHeadersBuilder* listHeadersBuilder,
+void InMemStructuresCopier::calculateListHeadersTask(node_offset_t numNodes, uint32_t elementSize,
+    atomic_uint64_vec_t* listSizes, ListHeadersBuilder* listHeadersBuilder,
     const shared_ptr<spdlog::logger>& logger) {
     logger->trace("Start: ListHeadersBuilder={0:p}", (void*)listHeadersBuilder);
     auto numElementsPerPage = PageUtils::getNumElementsInAPage(elementSize, false /* hasNull */);
@@ -79,10 +77,9 @@ void InMemStructuresCSVCopier::calculateListHeadersTask(node_offset_t numNodes,
     logger->trace("End: adjListHeadersBuilder={0:p}", (void*)listHeadersBuilder);
 }
 
-void InMemStructuresCSVCopier::calculateListsMetadataAndAllocateInMemListPagesTask(
-    uint64_t numNodes, uint32_t elementSize, atomic_uint64_vec_t* listSizes,
-    ListHeadersBuilder* listHeadersBuilder, InMemLists* inMemList, bool hasNULLBytes,
-    const shared_ptr<spdlog::logger>& logger) {
+void InMemStructuresCopier::calculateListsMetadataAndAllocateInMemListPagesTask(uint64_t numNodes,
+    uint32_t elementSize, atomic_uint64_vec_t* listSizes, ListHeadersBuilder* listHeadersBuilder,
+    InMemLists* inMemList, bool hasNULLBytes, const shared_ptr<spdlog::logger>& logger) {
     logger->trace("Start: listsMetadataBuilder={0:p} adjListHeadersBuilder={1:p}",
         (void*)inMemList->getListsMetadataBuilder(), (void*)listHeadersBuilder);
     auto numChunks = StorageUtils::getNumChunks(numNodes);
