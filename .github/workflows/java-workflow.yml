@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/java_api
+
       - name: Install uv
         run: python3 -m pip install uv
 
@@ -42,6 +45,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/java_api
+
       - name: Install uv
         run: python3 -m pip install uv
 
@@ -66,6 +72,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/java_api
 
       - name: Install uv
         run: pip3 install uv
@@ -95,6 +104,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/java_api
 
       - name: Install uv
         run: pip3 install uv

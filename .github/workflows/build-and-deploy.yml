@@ -167,6 +167,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/rust_api
+
       - name: Install uv
         run: pip3 install uv
 
@@ -219,6 +222,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/java_api
 
       - name: Install uv
         run: python3 -m pip install uv
@@ -309,6 +315,9 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_JS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/nodejs_api
 
       - name: Install uv
         run: pip3 install uv
@@ -417,6 +426,9 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_JS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/wasm
 
       - uses: actions/download-artifact@v4
         with:

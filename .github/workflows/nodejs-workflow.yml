@@ -39,6 +39,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Update submodules
+        run: git submodule update --init --recursive tools/nodejs_api
+
       - name: Update nightly version
         if: ${{ inputs.isNightly == true }}
         run: |
