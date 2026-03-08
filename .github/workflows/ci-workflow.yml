@@ -116,6 +116,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout dataset and benchmarks
+        run: |
+          git submodule update --init dataset benchmark # needed for demo db
+
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
@@ -166,6 +170,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout extensions
+        run: |
+          git submodule update --init extension
 
       - name: Free disk space on Ubuntu runner
         uses: kfir4444/free-disk-space@main
