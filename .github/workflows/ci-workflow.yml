@@ -173,7 +173,7 @@ jobs:
 
       - name: Checkout extensions
         run: |
-          git submodule update --init extension benchmark
+          git submodule update --init extension dataset benchmark
 
       - name: Free disk space on Ubuntu runner
         uses: kfir4444/free-disk-space@main
